@@ -1,5 +1,7 @@
 from torch import Tensor
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, Subset
+from sklearn.model_selection import StratifiedKFold
+import numpy as np
 
 
 class AbstractDataset(Dataset):
@@ -16,4 +18,17 @@ class AbstractDataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.X)        
+
+    def get_k_fold(self, k: int = 5):
+        skf = StratifiedKFold(n_splits=k)
+        folds = []
+        for train_indices, valid_indices in skf.split(self.X, self.y):
+            folds.append((Subset(self, train_indices), Subset(self, valid_indices)))
+    
+        return folds
+
+
+
+
+
         
